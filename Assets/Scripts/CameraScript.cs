@@ -13,6 +13,7 @@ public class CameraScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Makes sure the camera is on top of the player
         transform.position = new(playerTransform.position.x, transform.position.y, playerTransform.position.z);
     }
 }

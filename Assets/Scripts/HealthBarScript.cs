@@ -10,12 +10,14 @@ public class HealthBarScript : MonoBehaviour
     Quaternion startRotate;
     void Start()
     {
+        //Makes sure the health bar doesn't spin out of control
         startRotate = transform.rotation;
         rectTransform = GetComponent<RectTransform>();
     }
 
     public void UpdateHealthBar(float health, float maxHealth)
     {
+        //Affixes the health bar to the correct percentage
         slider.value = health/maxHealth;
         if (display != null)
         {

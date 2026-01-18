@@ -1,3 +1,5 @@
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -16,13 +18,19 @@ public class PlayerScript : MonoBehaviour
     public GameObject backDrop;
     public bool isVictory;
     public float Tiner;
+    public float gameTimer;
+    public TextMeshProUGUI time;
+    public GameObject timeDisplay;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        //Adjusts UI
         victory.SetActive(false);
         backDrop.SetActive(false);
-        Ball.FindActionMap("Player").Enable();
+        timeDisplay.SetActive(false);
+        //Gets control scheme
+        //Ball.FindActionMap("Player").Enable();
         healthBarScript = healthBar.GetComponent<HealthBarScript>();
         
         
@@ -39,10 +47,17 @@ public class PlayerScript : MonoBehaviour
     }
     void Update()
     {
+        //Gets the speed value for the ball and applies it
         Vector2 push = roll.ReadValue<Vector2>();
         rb.AddForce(push.x, 0, push.y);
-        if (isVictory)
+        //Counts up
+        if (!isVictory)
         {
+            gameTimer += Time.deltaTime;
+        }
+        else
+        {
+            //Waits 5 seconds, then resets the game
             Tiner+=Time.deltaTime;
             if (Tiner >= 5)
             {
@@ -62,16 +77,24 @@ public class PlayerScript : MonoBehaviour
             PlayerHeal(1);
             Destroy(collision.gameObject);
         }
-        if (collision.gameObject.CompareTag("Exit"))
+        
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        //Displays victory screen, then preps for a reset.
+        if (other.gameObject.CompareTag("Exit"))
         {
             victory.SetActive(true);
             backDrop.SetActive(true);
+            timeDisplay.SetActive(true);
+            time.text = "Total Time: "+Math.Round(gameTimer) + " seconds!";
             isVictory=true;
+
         }
     }
-
     public void PlayerDamage(float amount)
     {
+        //Adjusts health, resets if health is 0
         health-=amount;
         if (health <= 0)
         {
@@ -81,6 +104,7 @@ public class PlayerScript : MonoBehaviour
     }
     public void PlayerHeal(float amount)
     {
+        //Adjusts health, ensures healtgh cannot go over maximum
         if (health + amount > maxHealth)
         {
             health=maxHealth;
